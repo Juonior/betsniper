@@ -1,11 +1,16 @@
-from fonbet.scanner import main as fonbet_scanner
-from olimp.scanner import main as olimp_scanner
+from betsniper.fonbet.scanner import main as fonbet_scanner
+from betsniper.olimp.scanner import main as olimp_scanner
+
+from betsniper_web.app import app
+from betsniper_web.app.views import UpdateEvents
+
 from difflib import SequenceMatcher
 
 import time
 sports = ["basketball"]
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def main():
     while True:
         s = fonbet_scanner(requested_sports = sports)
         g = olimp_scanner(requested_sports = sports)

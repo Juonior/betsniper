@@ -1,5 +1,5 @@
 import requests, threading
-from olimp.config import variants_sports, get_bet_name
+from betsniper.olimp.config import variants_sports, get_bet_name
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 YaBrowser/23.5.2.625 Yowser/2.5 Safari/537.36",
 }

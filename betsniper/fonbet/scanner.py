@@ -1,4 +1,4 @@
-from fonbet.config import bet_types, variants_sports
+from betsniper.fonbet.config import bet_types, variants_sports
 import requests, time
 
 
