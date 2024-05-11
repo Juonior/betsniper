@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Процент взаимоставки</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="{{ url_for('static', filename='js/websockets.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">OFBet Bot</h1>
+        <form class="formCalc">
+            <table class="Calc">
+                <thead>
+                    <tr>
+                        <th>Контора</th>
+                        <th>Ставка</th>
+                        <th>Коэф</th>
+                        <th>Сумма</th>
+                        <th>Валюта</th>
+                        <th>Р</th>
+                        <th>Ф</th>
+                        <th>Доход</th>
+                        <th>Округление</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><select style="width:122px;" id="kontora_1">
+                            <option value="Контора 1">Fonbet</option>
+                            Контора</select></td>
+                        <td><div id="bet_1">Ставка 1</div></td>
+                        <td><input id="kf_1" style="width:40px;"></input></td>
+                        <td><input id="summ_1" style="width:70px;"></input></td>
+                        <td><select id="fiat_1" style="width:60px;">
+                            <option value="RUB">RUB</option>
+                        </select></td>
+                        <td><input type="checkbox" id="checkbox_1"></select></td>
+                        <td><input type="radio" id="radio_1" checked></select></td>
+                        <td><div id="profit_1"></div></td>
+                        <td><select id="round_1" style="width:80px;">
+                            <option value="1000">1000</option>
+                            <option value="500">500</option>
+                            <option value="100">100</option>
+                            <option value="50">10</option>
+                            <option value="10">10</option>
+                            <option value="5">5</option>
+                            <option value="1">1</option>
+                            <option value="0.1">0.1</option>
+                            <option value="0.01">0.01</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><select style="width:122px;" id="kontora_1">
+                            <option value="Контора 2">Olimp</option>
+                            Контора</select></td>
+                        <td><div id="bet_2">Ставка 2</div></td>
+                        <td><input id="kf_2" style="width:40px;"></input></td>
+                        <td><input id="summ_2" style="width:70px;"></input></td>
+                        <td><select id="fiat_2" style="width:60px;">
+                            <option value="RUB">RUB</option>
+                        </select></td>
+                        <td><input type="checkbox" id="checkbox_2"></select></td>
+                        <td><input type="radio" id="radio_2"></select></td>
+                        <td><div id="profit_2"></div></td>
+                        <td><select id="round_2" style="width:80px;">
+                            <option value="1000">1000</option>
+                            <option value="500">500</option>
+                            <option value="100">100</option>
+                            <option value="50">10</option>
+                            <option value="10">10</option>
+                            <option value="5">5</option>
+                            <option value="1">1</option>
+                            <option value="0.1">0.1</option>
+                            <option value="0.01">0.01</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><div></div></td>
+                        <td><div></div></td>
+                        <td><div id="profit_kf"></div></td>
+                        <td><div id="all_summ"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        
+        <div id="gridBets" class="grid-view">
+            <table class="items table table-striped table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th class="button-column" id="gridBets_c0">Время жизни</th>
+                        <th id="gridBets_c1">Profit %</th>
+                        <th id="gridBets_c2">Контора</th>
+                        <th id="gridBets_c3">Событие</th>
+                        <th id="gridBets_c4">Ставка</th>
+                        <th id="gridBets_c5">Коэф</th>
+                    </tr>
+                </thead>
+                <tbody class="events">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/copy.js') }}"></script>
+</body>
+</html>

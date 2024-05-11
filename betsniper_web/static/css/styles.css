@@ -1,0 +1,35 @@
+.formCalc {
+    padding: 19px 20px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e5e5e5;
+}
+
+.formCalc table {
+    table-layout: auto;
+    width: 100%;
+}
+
+.formCalc th {
+    text-align: center;
+    background-color: #eee;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: 1px solid #ddd; /* Границы для заголовков */
+}
+
+.formCalc tbody {
+    text-align: center;
+}
+
+.formCalc tr {
+    background-color: #f2f2f2; /* Оттенок серого цвета */
+    border: 1px solid #ddd; /* Границы для заголовков */
+}
+.formCalc input {
+    border: 1px solid #ddd; /* Границы для заголовков */
+}
+.formCalc select {
+    border: 1px solid #ddd; /* Границы для заголовков */
+}
