@@ -1,4 +1,4 @@
-from app import app, socketio
+from betsniper_web.app import app, socketio
 from flask import render_template
 from flask_socketio import emit
 

@@ -11,4 +11,4 @@ app = Flask(__name__,static_folder=os.path.join(base_dir, 'static'), template_fo
 socketio = SocketIO(app,async_mode='gevent')
 
 
-from app import views
+from betsniper_web.app import views
