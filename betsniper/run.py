@@ -66,7 +66,7 @@ def main():
                             kf4 = float(g[eventg]["bets"][k1])
                             # print("kf: ", kf3, kf4)
                             pr2 = (100 * (kf3 / (1 + kf3 / kf4) - 1))
-                        if 0 < pr1 < 10:
+                        if -1000 < pr1 < 1000:
                             print(pr1, kf1, kf2, event, k1, k2, )
                             print(s[event]["url"].replace('tennis', 'basketball'))
                             print(g[eventg]["url"])
@@ -88,12 +88,12 @@ def main():
                                 'time': first_appearance_times[
                                     "".join([event, str(kf1), str(kf2)])].isoformat()
                             })
-                        if 0 < pr2 < 10:
+                        if -1000 < pr2 < 1000:
                             print(pr2, kf3, kf4, event, k1, k2)
                             print(s[event]["url"].replace('tennis', 'basketball'))
-                            print(g[event]["url"])
+                            print(g[eventg]["url"])
                             print('------------------------------')
-                            if not "".join([event, str(kf1), str(kf2)]) in first_appearance_times:
+                            if not "".join([event, str(kf3), str(kf4)]) in first_appearance_times:
                                 first_appearance_times["".join([event, str(kf3), str(kf4)])] = datetime.now()
                             events.append({
                                 'site1': "Fonbet",
