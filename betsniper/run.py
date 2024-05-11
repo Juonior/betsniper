@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from betsniper.fonbet.scanner import main as fonbet_scanner
 from betsniper.olimp.scanner import main as olimp_scanner
 
@@ -8,10 +10,11 @@ from difflib import SequenceMatcher
 
 import time
 sports = ["basketball"]
-
+first_appearance_times = {}
 # if __name__ == "__main__":
 def main():
     while True:
+        events = []
         s = fonbet_scanner(requested_sports = sports)
         g = olimp_scanner(requested_sports = sports)
         for event in s:
@@ -63,14 +66,50 @@ def main():
                             kf4 = float(g[eventg]["bets"][k1])
                             # print("kf: ", kf3, kf4)
                             pr2 = (100 * (kf3 / (1 + kf3 / kf4) - 1))
-
                         if 0 < pr1 < 10:
                             print(pr1, kf1, kf2, event, k1, k2, )
                             print(s[event]["url"].replace('tennis', 'basketball'))
-                            print(g[event]["url"])
+                            print(g[eventg]["url"])
                             print('------------------------------')
+                            if not "".join([event, str(kf1), str(kf2)]) in first_appearance_times:
+                                first_appearance_times["".join([event, str(kf1), str(kf2)])] = datetime.now()
+                            events.append({
+                                'site1': "Fonbet",
+                                'type1': k1,
+                                'link1': s[event]["url"].replace('tennis', 'basketball'),
+                                'coefficient1': kf1,
+                                'matchName1': event,
+                                'site2': "Olimp",
+                                'type2': k2,
+                                'link2': g[eventg]["url"],
+                                'coefficient2': kf2,
+                                'matchName2': eventg,
+                                'profit': round(pr1, 2),
+                                'time': first_appearance_times[
+                                    "".join([event, str(kf1), str(kf2)])].isoformat()
+                            })
                         if 0 < pr2 < 10:
                             print(pr2, kf3, kf4, event, k1, k2)
                             print(s[event]["url"].replace('tennis', 'basketball'))
                             print(g[event]["url"])
                             print('------------------------------')
+                            if not "".join([event, str(kf1), str(kf2)]) in first_appearance_times:
+                                first_appearance_times["".join([event, str(kf3), str(kf4)])] = datetime.now()
+                            events.append({
+                                'site1': "Fonbet",
+                                'type1': k2,
+                                'link1': s[event]["url"].replace('tennis', 'basketball'),
+                                'coefficient1': kf3,
+                                'matchName1': event,
+                                'site2': "Olimp",
+                                'type2': k1,
+                                'link2': g[eventg]["url"],
+                                'coefficient2': kf4,
+                                'matchName2': eventg,
+                                'profit': round(pr2, 2),
+                                'time': first_appearance_times[
+                                    "".join([event, str(kf3), str(kf4)])].isoformat()
+                            })
+
+        with app.app_context():
+            UpdateEvents(events)
