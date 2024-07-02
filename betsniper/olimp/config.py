@@ -145,30 +145,13 @@ def get_bet_name(outcome, team_1):
     for (table_type, group_names), formatter in formatters.items():
         if outcome['tableType'] == table_type:
             if group_names is None or remove_digits(outcome["groupName"]).lower() in group_names:
-                print(formatter(outcome))
                 return formatter(outcome)
             if "счет" in outcome["groupName"].lower() and "сета" in outcome["groupName"]:
-                print(format_scorefull_set(outcome))
                 return format_scorefull_set(outcome)
 
     return "None"
 
 
-outcome =         {
-          "id": "-15891085562",
-          "tableType": "OTHER",
-          "groupName": "Тай-брейк в матче",
-          "groupPosition": 916,
-          "probability": "5.40",
-          "unprocessedName": "Тай-брейк в 1-м сете: да",
-          "param": "-9999.00",
-          "basketId": "80307228:2:817:-9999.0:1:0:0:3",
-          "shortName": "",
-          "groupId": "OLIMP_LIVE_GROUP_224_0",
-          "positionInGroup": 222,
-          "marketId": 817
-        }
-get_bet_name(outcome, "Эрбер П.-Ю.")
 variants_sports = {
     'tennis': "Теннис",
     'basketball': "Баскетбол"
