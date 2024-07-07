@@ -162,5 +162,3 @@ def main():
     while True:
         process_events()
         # time.sleep(60)
-
-main()
