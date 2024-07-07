@@ -1,13 +1,9 @@
 import threading
 from datetime import datetime
-from flask import jsonify
 import requests, re
 
 from betsniper.fonbet.scanner import main as fonbet_scanner
 from betsniper.olimp.scanner import main as olimp_scanner
-
-from betsniper_web.app import app
-from betsniper_web.app.views import UpdateEvents
 
 from difflib import SequenceMatcher
 
@@ -63,8 +59,10 @@ def extract_value(value):
 # функция для нахождения противоположных ставок в 2 букмекерах
 def find_opposite_bets(array1, array2):
     opposite_bets = []
+    set_array1 = set(array1)
     set_array2 = set(array2)
-    for bet1 in array1:
+
+    for bet1 in set_array1:
         split_bet1 = bet1.split()
         if len(split_bet1) > 1:
             type1, value1 = split_bet1[0], extract_value(split_bet1[1])
