@@ -33,7 +33,6 @@ def main(requested_sports: list):
     # Получения списка всех матчей
     response = requests.get("https://www.olimp.bet/api/v4/0/live/broadcast/sports-with-competitions-with-events", headers=headers).json()
     sports = [variants_sports[requested_sport] for requested_sport in requested_sports]
-
     i = 0
     # Просмотр всех котировок на нужном матче
     for sport in response:
@@ -41,7 +40,6 @@ def main(requested_sports: list):
         if sport_name in sports:
             for competition in sport["payload"]["competitionsWithEvents"]:
                 for event in competition["events"]:
-                    i += 1
                     thread = threading.Thread(target=get_info, args=(event["id"], sport_name, event["team1Name"]))
                     thread.start()
                     threads.append(thread)

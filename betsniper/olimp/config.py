@@ -3,7 +3,7 @@ import re
 
 first_team = None
 
-
+# функция для удаления цифр из названия ставки
 def remove_digits(s):
     return re.sub(r'\d', '', s)
 
@@ -55,6 +55,7 @@ def format_quarter_bet(outcome):
         total_type = 'ТМ' if 'мен' in outcome['unprocessedName'] else 'ТБ'
         return f"{total_type} ({param}) ({outcome['shortName'][1]}-я четверть)"
 
+
 def format_set_game(outcome):
     winner = outcome['shortName'][-2:]
     num_set = outcome['shortName'][0]
@@ -64,7 +65,7 @@ def format_set_game(outcome):
 
 def format_set_score(outcome):
     if "ровно" in outcome["groupName"]:
-        num_set = outcome['unprocessedName'][21]
+        num_set = outcome['unprocessedName'][22]
         game = outcome['unprocessedName'][11]
         result = 1 if outcome['unprocessedName'][-2:] == 'да' else 0
         return f"{result} 40:40 счет ({num_set}-й сет) ({game}-й гейм)"
@@ -116,7 +117,7 @@ def format_tiebreak(outcome):
 
 
 def format_count_sets(outcome):
-    return f"{outcome["unprocessedName"]} из 3-х сетов"
+    return f"{outcome['unprocessedName']} из 3-х сетов"
 
 
 def get_bet_name(outcome, team_1):
@@ -124,6 +125,7 @@ def get_bet_name(outcome, team_1):
     global first_team
     first_team = team_1
 
+    # набор тегов и названий для определения функции форматирования названия ставки
     formatters = {
         ('HANDICAP', "основные победа с учетом форы"): format_handicap,
         ('TOTAL', "основные доп. тоталы индивидуальное количество выигранных геймов"): format_total,

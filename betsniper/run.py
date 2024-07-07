@@ -1,4 +1,7 @@
+import threading
 from datetime import datetime
+from flask import jsonify
+import requests, re
 
 from betsniper.fonbet.scanner import main as fonbet_scanner
 from betsniper.olimp.scanner import main as olimp_scanner
@@ -9,107 +12,147 @@ from betsniper_web.app.views import UpdateEvents
 from difflib import SequenceMatcher
 
 import time
-sports = ["basketball"]
+
+sports = ["tennis"]
 first_appearance_times = {}
-# if __name__ == "__main__":
+
+fonbet_events = []
+olimp_events = []
+
+
+def get_fonbet():
+    global fonbet_events
+    fonbet_events = fonbet_scanner(sports)
+
+
+def get_olimp():
+    global olimp_events
+    olimp_events = olimp_scanner(sports)
+
+
+def get_all_events():
+    fonbet_thread = threading.Thread(target=get_fonbet, args=())
+    olimp_thread = threading.Thread(target=get_olimp, args=())
+
+    fonbet_thread.start()
+    olimp_thread.start()
+
+    fonbet_thread.join()
+    olimp_thread.join()
+
+
+types = {
+    "ТБ": ["ТМ"],
+    "ТМ": ["ТБ"],
+    "П1": ["П2"],
+    "П2": ["П1"],
+    "Ф2": ["Ф1"],
+    "Ф1": ["Ф2"]
+}
+
+
+def extract_value(value):
+    match = re.search(r"[-+]?\d*\.\d+|\d+", value)
+    if match:
+        return float(match.group())
+    return 0
+
+
+def find_opposite_bets(array1, array2):
+    opposite_bets = []
+    for bet1 in array1:
+        split_bet1 = bet1.split()
+        if len(split_bet1) > 1:
+            type1, value1 = split_bet1[0], extract_value(split_bet1[1])
+        else:
+            type1, value1 = split_bet1[0], 0
+
+        for bet2 in array2:
+            split_bet2 = bet2.split()
+            if len(split_bet2) > 1:
+                type2, value2 = split_bet2[0], extract_value(split_bet2[1])
+            else:
+                type2, value2 = split_bet2[0], 0
+
+            if types.get(type1) == [type2] and abs(value1) == abs(value2) and value1 * value2 < 0:
+                if split_bet2[2:] == split_bet1[2:]:
+                    opposite_bets.append([bet1, bet2])
+
+            elif types.get(type1) == [type2] and split_bet1[1:] == split_bet2[1:]:
+                opposite_bets.append([bet1, bet2])
+
+    return opposite_bets
+
+
 def main():
     while True:
+        current_keys = set()
         events = []
-        s = fonbet_scanner(requested_sports = sports)
-        g = olimp_scanner(requested_sports = sports)
-        for event in s:
-            check = False
-            eventg = ''
-            for event2 in g:
-                similarity = SequenceMatcher(None, event, event2).ratio()
+        get_all_events()
+        for event_fonbet in fonbet_events:
+
+            current_event_olimp = ''
+            flag = True
+            for event_olimp in olimp_events:
+                similarity = SequenceMatcher(None, event_fonbet, event_olimp).ratio()
                 if similarity > 0.70:
-                    # print(event2, similarity)
-                    eventg = event2
-                    check = True
-            if check == False:
+                    # print(event_olimp, similarity)
+                    flag = False
+                    current_event_olimp = event_olimp
+                    break
+            if flag:
                 continue
-            if len(s[event]["bets"]) != 0 and len(g[eventg]["bets"]) != 0:
-                print(event)
+            count_bets_fonbet = len(fonbet_events[event_fonbet]['bets'])
+            count_bets_olimp = len(olimp_events[current_event_olimp]['bets'])
+            if count_bets_olimp != 0 and count_bets_fonbet != 0:
+                print(event_fonbet)
                 # print(s[event]["bets"])
                 # print(list(s[event]["bets"].keys())[0])
                 # print(g[eventg]["bets"])
-                k2 = ''
-                for k1 in list(s[event]["bets"].keys()):
-                    if 'ТБ' in k1:
-                        k2 = k1.replace('Б', 'М')
-                    if 'ТМ' in k1:
-                        k2 = k1.replace('М', 'Б')
-                    if 'П1' in k1:
-                        k2 = k1.replace('1', '2')
-                    if 'П2' in k1:
-                        k2 = k1.replace('2', '1')
-                    if 'Ф1 (+' in k1:
-                        k2 = k1.replace('+', '-')
-                    if 'Ф2 (+' in k1:
-                        k2 = k1.replace('+', '-')
-                    if 'Ф1 (-' in k1:
-                        k2 = k1.replace('-', '+')
-                    if 'Ф2 (-' in k1:
-                        k2 = k1.replace('-', '+')
-                    if k2 in list(g[eventg]["bets"].keys()):
-                        # print(k1, k2)
-                        kf1 = float(s[event]["bets"][k1])
-                        kf2 = float(g[eventg]["bets"][k2])
-                        # print("kf: ",kf1, kf2)
-                        # 100 * (СТАВКА1 / (1 + СТАВКА1 / ПРОТИВОПОЛОЖНАЯСТАВКА1) - 1)
-                        pr1 = (100 * (kf1 / (1 + kf1/kf2) - 1))
-                        pr2 = 0
-                        kf3 = 0
-                        kf4 = 0
-                        if k2 in s[event]["bets"] and k1 in g[eventg]["bets"]:
-                            kf3 = float(s[event]["bets"][k2])
-                            kf4 = float(g[eventg]["bets"][k1])
-                            # print("kf: ", kf3, kf4)
-                            pr2 = (100 * (kf3 / (1 + kf3 / kf4) - 1))
-                        if -1000 < pr1 < 1000:
-                            print(pr1, kf1, kf2, event, k1, k2, )
-                            print(s[event]["url"].replace('tennis', 'basketball'))
-                            print(g[eventg]["url"])
-                            print('------------------------------')
-                            if not "".join([event, str(kf1), str(kf2)]) in first_appearance_times:
-                                first_appearance_times["".join([event, str(kf1), str(kf2)])] = datetime.now()
-                            events.append({
-                                'site1': "Fonbet",
-                                'type1': k1,
-                                'link1': s[event]["url"].replace('tennis', 'basketball'),
-                                'coefficient1': kf1,
-                                'matchName1': event,
-                                'site2': "Olimp",
-                                'type2': k2,
-                                'link2': g[eventg]["url"],
-                                'coefficient2': kf2,
-                                'matchName2': eventg,
-                                'profit': round(pr1, 2),
-                                'time': first_appearance_times[
-                                    "".join([event, str(kf1), str(kf2)])].isoformat()
-                            })
-                        if -1000 < pr2 < 1000:
-                            print(pr2, kf3, kf4, event, k1, k2)
-                            print(s[event]["url"].replace('tennis', 'basketball'))
-                            print(g[eventg]["url"])
-                            print('------------------------------')
-                            if not "".join([event, str(kf3), str(kf4)]) in first_appearance_times:
-                                first_appearance_times["".join([event, str(kf3), str(kf4)])] = datetime.now()
-                            events.append({
-                                'site1': "Fonbet",
-                                'type1': k2,
-                                'link1': s[event]["url"].replace('tennis', 'basketball'),
-                                'coefficient1': kf3,
-                                'matchName1': event,
-                                'site2': "Olimp",
-                                'type2': k1,
-                                'link2': g[eventg]["url"],
-                                'coefficient2': kf4,
-                                'matchName2': eventg,
-                                'profit': round(pr2, 2),
-                                'time': first_appearance_times[
-                                    "".join([event, str(kf3), str(kf4)])].isoformat()
-                            })
+                olimp_bets = olimp_events[current_event_olimp]["bets"]
+                fonbet_bets = fonbet_events[event_fonbet]["bets"]
+                opposite_bets = find_opposite_bets(fonbet_bets.keys(), olimp_bets.keys())
+                for fork in opposite_bets:
+                    kf1 = fonbet_bets[fork[0]]
+                    print(kf1)
+                    kf2 = float(olimp_bets[fork[1]])
+                    print(kf2)
+                    # print("kf: ",kf1, kf2)
+                    # 100 * (СТАВКА1 / (1 + СТАВКА1 / ПРОТИВОПОЛОЖНАЯСТАВКА1) - 1)
+                    pr1 = (100 * (kf1 / (1 + kf1 / kf2) - 1))
+                    if -1000 < pr1 < 1000:
+                        print(pr1, kf1, kf2, event_fonbet, fork[0], fork[1])
+                        print(fonbet_events[event_fonbet]["url"])
+                        print(olimp_events[current_event_olimp]["url"])
+                        print('------------------------------')
+                        key = "".join([event_fonbet, str(kf1), str(kf2)])
 
-        with app.app_context():
-            UpdateEvents(events)
+                        current_keys.add(key)
+
+                        if key not in first_appearance_times:
+                            first_appearance_times[key] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+
+                        events.append({
+                            'site1': "Fonbet",
+                            'type1': fork[0],
+                            'link1': fonbet_events[event_fonbet]["url"],
+                            'coefficient1': kf1,
+                            'matchName1': event_fonbet,
+                            'site2': "Olimp",
+                            'type2': fork[1],
+                            'link2': olimp_events[current_event_olimp]["url"],
+                            'coefficient2': kf2,
+                            'matchName2': current_event_olimp,
+                            'profit': round(pr1, 2),
+                            'time': first_appearance_times[key],
+                            "sport": "tennis"
+                        })
+
+        keys_to_remove = set(first_appearance_times.keys()) - current_keys
+        for key in keys_to_remove:
+            del first_appearance_times[key]
+
+        response = requests.post(url="https://87.251.86.97:911/getEvents", json=events, verify=False)
+
+
+main()
