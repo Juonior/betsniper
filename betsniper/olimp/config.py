@@ -65,7 +65,8 @@ def format_set_game(outcome):
 
 def format_set_score(outcome):
     if "ровно" in outcome["groupName"]:
-        num_set = outcome['unprocessedName'][22]
+        num_set = outcome['unprocessedName'][21] if outcome['unprocessedName'][21].isdigit() \
+            else outcome['unprocessedName'][22]
         game = outcome['unprocessedName'][11]
         result = 1 if outcome['unprocessedName'][-2:] == 'да' else 0
         return f"{result} 40:40 счет ({num_set}-й сет) ({game}-й гейм)"

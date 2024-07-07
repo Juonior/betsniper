@@ -105,18 +105,12 @@ def main():
             count_bets_fonbet = len(fonbet_events[event_fonbet]['bets'])
             count_bets_olimp = len(olimp_events[current_event_olimp]['bets'])
             if count_bets_olimp != 0 and count_bets_fonbet != 0:
-                print(event_fonbet)
-                # print(s[event]["bets"])
-                # print(list(s[event]["bets"].keys())[0])
-                # print(g[eventg]["bets"])
                 olimp_bets = olimp_events[current_event_olimp]["bets"]
                 fonbet_bets = fonbet_events[event_fonbet]["bets"]
                 opposite_bets = find_opposite_bets(fonbet_bets.keys(), olimp_bets.keys())
                 for fork in opposite_bets:
                     kf1 = fonbet_bets[fork[0]]
-                    print(kf1)
                     kf2 = float(olimp_bets[fork[1]])
-                    print(kf2)
                     # print("kf: ",kf1, kf2)
                     # 100 * (СТАВКА1 / (1 + СТАВКА1 / ПРОТИВОПОЛОЖНАЯСТАВКА1) - 1)
                     pr1 = (100 * (kf1 / (1 + kf1 / kf2) - 1))
@@ -153,6 +147,3 @@ def main():
             del first_appearance_times[key]
 
         response = requests.post(url="https://87.251.86.97:911/getEvents", json=events, verify=False)
-
-
-main()
